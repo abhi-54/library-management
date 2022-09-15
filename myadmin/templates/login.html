@@ -1,0 +1,39 @@
+{% extends 'base_authentication.html' %}
+{% load static %}
+{% block title %}
+  Login
+{% endblock %}
+
+{% block content %}
+<style>
+  .login-div {
+    width: 30rem;
+  }
+</style>
+<div class="login-div card shadow-lg p-4 mt-4">
+  {{ msg }}
+  {% load crispy_forms_tags %}
+  {% if request.path == "/login/" %}
+    <div>
+      <h2>Admin Login</h2>
+    </div>
+    <form action="{% url 'admin-login' %}" method="post">
+      {% csrf_token %}
+      {{ form |crispy }}
+      <button class="btn btn-success" type="submit">Login</button>
+    </form>
+    <span><a href="{% url 'admin-signup' %}">Create an Account</a></span>
+
+  {% elif request.path == "/student/login/"  %}
+    <div>
+      <h2>Student Login</h2>
+    </div>
+    <form action="{% url 'student-login' %}" method="post">
+      {% csrf_token %}
+      {{ form |crispy }}
+      <button class="btn btn-success" type="submit">Login</button>
+    </form>
+    <span><a href="{% url 'student-signup' %}">Create an Account</a></span>
+  {% endif %}
+</div>
+{% endblock %}

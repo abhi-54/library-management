@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+	<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+  <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {width: 8px; overflow-x:hidden; height: 8px;}
+      ::-webkit-scrollbar-track {background: #64809e}
+      ::-webkit-scrollbar-thumb {background: #3050a1;}
+      ::-webkit-scrollbar-thumb:hover {background: #007bff;}
+
+      .nav-item {
+        padding: 0.2rem;
+        margin-right: 0.3rem;
+      }
+
+      .nav-link {
+        color: #fff;
+        border-radius: 0.8rem;
+      }
+
+      .nav-link:hover {
+        background-color: #dfefff;
+        color: #007bff;
+      }
+
+      .flex-wrapper{
+			  display: flex;
+	  	}
+
+		  .book-wrapper{
+		  	margin:5px;
+		  	padding:1rem;
+		  	cursor: default;
+		  	border-bottom: 1px solid  #e9e9e9;
+		  	color: #686868;
+			}
+
+      .row-heading {
+        color: black;
+        font-weight: bold;
+      }
+
+      .book_name {
+        margin-right: 3rem;
+      }
+
+      .book_author {
+        margin-left: 3rem;
+      }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-primary">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-controls="bs-example-navbar-collapse-1" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="text-white">
+      <h3>Student Dashboard</h3>
+    </div>
+    <ul class="m-display navbar-nav">
+      {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'student-logout' %}"><i class="fas fa-sign-out"></i></a>
+        </li>
+      {% endif %}
+    </ul>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="navbar-nav ml-auto align-items-center">
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'student-logout' %}">Logout</a>
+        </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <span style="color: rgb(235, 229, 229);">
+            {{request.user}}
+          </span>
+        </li>
+        {% endif %}
+
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <h4>Books Available</h4>
+    </div>  
+
+    <div class="display-books-wrapper row justify-content-center mt-3">
+      <div class="display-books" id="display-books">
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    display_books()
+
+    function display_books() {
+      var display_tag = document.getElementById('display-books')
+
+      var api_url = 'http://127.0.0.1:8000/api/all-books/'
+
+      fetch(api_url)
+			.then((resp) => resp.json())
+			.then(function(data){
+
+        var list = data
+        display_tag.innerHTML = `
+            <div class="book-wrapper flex-wrapper row-heading">
+							<div style="flex:2">
+								<span class="book_name">
+                  Book Name
+                </span>
+							</div>
+							<div style="flex:2">
+								<span class="book_author">Book Author
+                </span>
+							</div>
+						</div>
+        ` 
+
+        for (var i in data) {
+          try{
+						document.getElementById(`data-row-${i}`).remove()
+					}
+          catch(err){}
+
+          var book_name = `<span class="book_name">${list[i].book_name}</span>`
+					var book_author = `<span class="book_author">${list[i].book_author}</span>`
+					if (list[i].book_author == true){
+						book_name = `<strike class="book_name">${list[i].book_name}</strike>`
+					}
+
+					var item = `
+						<div id="data-row-${i}" class="book-wrapper flex-wrapper">
+							<div style="flex:2">
+								${book_name}
+							</div>
+							<div style="flex:2">
+								${book_author}
+							</div>
+						</div>
+
+					`
+					display_tag.innerHTML += item
+        }
+      })
+    }
+  </script>
+</body>
+</html>
